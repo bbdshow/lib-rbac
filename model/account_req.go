@@ -1,58 +1,69 @@
 package model
 
 import (
+	"fmt"
 	"github.com/bbdshow/bkit/typ"
-	"github.com/bbdshow/gin-rabc/pkg/types"
 )
 
 type ListAccountReq struct {
-	AppId    string            `json:"appId" form:"appId"`
-	Nickname string            `json:"nickname" form:"nickname"`
-	Username string            `json:"username" form:"username"`
-	Status   types.LimitStatus `json:"status" form:"status"`
+	AppNo    string      `json:"app_no" form:"app_no"`
+	Nickname string      `json:"nickname" form:"nickname"`
+	Username string      `json:"username" form:"username"`
+	Status   LimitStatus `json:"status" form:"status"`
 	typ.PageReq
 }
 
 type ListAccount struct {
-	Id        int64             `json:"id"`
-	Nickname  string            `json:"nickname"`
-	Username  string            `json:"username"`
-	PwdWrong  int               `json:"pwdWrong"`
-	LoginLock int64             `json:"loginLock"`
-	Memo      string            `json:"memo"`
-	Status    types.LimitStatus `json:"status"`
-	Roles     []RoleBase        `json:"roles"`
-	UpdatedAt int64             `json:"updatedAt"`
-	CreatedAt int64             `json:"createdAt"`
+	Id        int64       `json:"id"`
+	Nickname  string      `json:"nickname"`
+	Username  string      `json:"username"`
+	PwdWrong  int         `json:"pwdWrong"`
+	LoginLock int64       `json:"loginLock"`
+	Memo      string      `json:"memo"`
+	Status    LimitStatus `json:"status"`
+	Roles     []RoleBase  `json:"roles"`
+	UpdatedAt int64       `json:"updatedAt"`
+	CreatedAt int64       `json:"createdAt"`
 }
 
 type RoleBase struct {
-	Id      int64             `json:"id"`
-	Name    string            `json:"name"`
-	AppId   string            `json:"appId"`
-	AppName string            `json:"appName"`
-	Status  types.LimitStatus `json:"status"`
+	Id      int64       `json:"id"`
+	Name    string      `json:"name"`
+	AppId   string      `json:"appId"`
+	AppName string      `json:"appName"`
+	Status  LimitStatus `json:"status"`
 }
 
 type GetAccountReq struct {
-	Id       int64
+	OID      string
 	Username string
+	UseCache bool
+}
+
+func (in *GetAccountReq) CacheKey() string {
+	return fmt.Sprintf("GetAccountReq.OID%s.Username%s", in.OID, in.Username)
 }
 
 type GetAccountAppActivateReq struct {
-	Id        int64
-	AccountId int64
-	AppId     string
-	Token     string
+	OID        string
+	AccountOID string
+	AppNo      string
+	Token      string
+	UseCache   bool
+}
+
+func (in *GetAccountAppActivateReq) CacheKey() string {
+	return fmt.Sprintf("GetAccountAppActivateReq.OID%s.AccountOID%s.AppNo%s.Token%s",
+		in.OID, in.AccountOID, in.AppNo, in.Token)
 }
 
 type FindAccountReq struct {
-	Status types.LimitStatus
+	Status LimitStatus
 }
 
 type FindAccountAppActivateReq struct {
-	AccountId int64
-	AppId     string
+	AccountOID string
+	AppOID     string
 }
 
 type CreateAccountReq struct {
@@ -64,9 +75,9 @@ type CreateAccountReq struct {
 
 type UpdateAccountReq struct {
 	typ.IdReq
-	Nickname string            `json:"nickname"`
-	Memo     string            `json:"memo"`
-	Status   types.LimitStatus `json:"status"`
+	Nickname string      `json:"nickname"`
+	Memo     string      `json:"memo"`
+	Status   LimitStatus `json:"status"`
 }
 
 type DelAccountReq struct {
@@ -105,12 +116,12 @@ type UpdateAccountPasswordReq struct {
 }
 
 type ResetAccountPasswordReq struct {
-	typ.IdReq
+	OIDReq
 	Password string `json:"password" binding:"required,len=32"`
 }
 
 type UpdateAccountRoleReq struct {
-	typ.IdReq
+	OIDReq
 	Roles []int64 `json:"roles" binding:"required"`
 }
 

@@ -1,6 +1,7 @@
 package model
 
 import (
+	"fmt"
 	"github.com/bbdshow/bkit/typ"
 )
 
@@ -11,15 +12,15 @@ type ListAppConfigReq struct {
 }
 
 type ListAppConfig struct {
-	Id        int64       `json:"id"`
-	AppId     string      `json:"appId"`
-	Name      string      `json:"name"`      // APP名
-	AccessKey string      `json:"accessKey"` // 访问KEY
-	SecretKey string      `json:"secretKey"` // 加密KEY
-	Status    LimitStatus `json:"status"`    // 状态 1-正常 2-限制
-	Memo      string      `json:"memo"`      // 备注
-	UpdatedAt int64       `json:"updatedAt"`
-	CreatedAt int64       `json:"createdAt"`
+	OID       string      `json:"oid"`
+	AppNo     string      `json:"app_no"`
+	Name      string      `json:"name"`       // APP名
+	AccessKey string      `json:"access_key"` // 访问KEY
+	SecretKey string      `json:"secret_key"` // 加密KEY
+	Status    LimitStatus `json:"status"`     // 状态 1-正常 2-限制
+	Memo      string      `json:"memo"`       // 备注
+	UpdatedAt int64       `json:"updated_at"`
+	CreatedAt int64       `json:"created_at"`
 }
 
 type SelectAppConfigReq struct {
@@ -28,25 +29,30 @@ type SelectAppConfigReq struct {
 }
 
 type SelectAppConfig struct {
-	Id    int64  `json:"id"`
-	AppId string `json:"appId"`
+	OID   string `json:"oid"`
+	AppNo string `json:"app_no"`
 	Name  string `json:"name"` // APP名
 	Memo  string `json:"memo"` // 备注
 }
 
 type GetAppConfigReq struct {
-	AppId     string
+	AppNo     string
 	AccessKey string
+	UseCache  bool
+}
+
+func (in *GetAppConfigReq) CacheKey() string {
+	return fmt.Sprintf("AppConfig_appNo_%s_accessKey_%s", in.AppNo, in.AccessKey)
 }
 
 type GetAppConfigResp struct {
-	Id        int64       `json:"id"`
-	AppId     string      `json:"appId"`
+	OID       string      `json:"oid"`
+	AppNo     string      `json:"app_no"`
 	Name      string      `json:"name"`
-	AccessKey string      `json:"accessKey"` // 访问KEY
-	SecretKey string      `json:"secretKey"` // 加密KEY
-	Status    LimitStatus `json:"status"`    // 状态 1-正常 2-限制
-	Memo      string      `json:"memo"`      // 备注
+	AccessKey string      `json:"access_key"` // 访问KEY
+	SecretKey string      `json:"secret_key"` // 加密KEY
+	Status    LimitStatus `json:"status"`     // 状态 1-正常 2-限制
+	Memo      string      `json:"memo"`       // 备注
 }
 
 type CreateAppConfigReq struct {
@@ -55,13 +61,13 @@ type CreateAppConfigReq struct {
 }
 
 type UpdateAppConfigReq struct {
-	typ.IdReq
-	IsSecretKey int         `json:"isSecretKey"` // 1 = 重置加密KEY
+	OIDReq
+	IsSecretKey int         `json:"is_secret_key"` // 1 = 重置加密KEY
 	Name        string      `json:"name"`
 	Memo        string      `json:"memo"`
 	Status      LimitStatus `json:"status"` //状态 1-正常 2-限制
 }
 
 type DelAppConfigReq struct {
-	typ.IdReq
+	OIDReq
 }
